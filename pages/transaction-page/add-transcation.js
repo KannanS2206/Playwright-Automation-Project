@@ -3,9 +3,15 @@ import { LoginObject } from '../login';
 
 const login = new LoginObject();
 
+let assert={
+    response:[
+        "Done. You can close this dialog now."
+    ]
+};
 let notesName = "Kannan Test";
+let importNoteName = "Imported File";
 let accessToken = "";
-let apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZnlmc2xnZnBjeWJ5YWpqbmRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2OTQ1NzEsImV4cCI6MjA5OTI3MDU3MX0.grButg-0T-WfoPVwYDqxzaGejz_pmb2nzDk6fdj6Q4s"
+let apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZnlmc2xnZnBjeWJ5YWpqbmRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2OTQ1NzEsImV4cCI6MjA5OTI3MDU3MX0.grButg-0T-WfoPVwYDqxzaGejz_pmb2nzDk6fdj6Q4s";
 
 export class addTransaction {
     constructor(page, request) {
@@ -41,8 +47,20 @@ export class addTransaction {
         return this.page.locator('input[type="file"]')
     }
 
-    get downloadTemplate() {
+    get downloadTemplateButton() {
         return this.page.getByRole('button', { name: 'Download Template' });
+    }
+
+    get confirmImport(){
+        return this.page.getByRole('button', { name: /Confirm Import/ })
+    }
+
+    get importCsvContainer(){
+        return this.page.locator('[data-slot="dialog-body"]');
+    }
+
+    get closeButton(){
+        return this.page.getByRole('button', {name:'Close'}).first();
     }
 
 
@@ -115,11 +133,19 @@ export class addTransaction {
     async importTransaction() {
         await this.importMenu.click();
         await this.uploadFile.setInputFiles('C:/Users/kanna/Playwright Automation Cursor/test-asserts/Test Import File.csv');
+        await this.confirmImport.click();
+        await expect(this.importCsvContainer).toContainText(assert.response[0]);
+        await this.closeButton.click();
+
+        await this.searchTransaction.fill("Import");
+        await expect(this.firstRowTable).toContainText(importNoteName);
+        await this.deleteTransaction.click();
+        await this.confirmDelete.click();
     }
 
     async downloadTemplate() {
         const downloadPromise = this.page.waitForEvent('download');
-        await this.downloadTemplate.click();
+        await this.downloadTemplateButton.click();
         const download = await downloadPromise;
         expect(download.suggestedFilename());
     }

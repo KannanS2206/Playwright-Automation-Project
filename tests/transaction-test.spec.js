@@ -1,25 +1,35 @@
-import {test, expect} from '../fixtures/storeObjects';
+import { test, expect } from '../fixtures/storeObjects';
 import loginData from '../test-data/login-data.json' with {type : 'json'}
 
-test('login with valid credentials', async ({page, loginPage, addNewTransaction}) => {
-    // await loginPage.login(
-    //     loginData.validCredentials.username, 
-    //     loginData.validCredentials.password);
+test.describe('Transaction Tests', () => {
 
-    //Login Using API
-    await addNewTransaction.loginUsingApi();
+    test.beforeEach(async ({ addNewTransaction }) => {
 
-    //Add New Transaction
-    await addNewTransaction.createNewTransactionWithCash();
+        // Login using API before each test
+        await addNewTransaction.loginUsingApi();
 
-    // //Login Again
+    // //Login Using UI
     // await loginPage.login(
     // loginData.validCredentials.username, 
     // loginData.validCredentials.password);
+    });
 
-    await page.goto('/dashboard');
+    test('create, validate, download and import transaction', async ({ page, addNewTransaction}) => {
 
-    //Validate the Created One and Delete it
-    await addNewTransaction.validateCreatedTransaction();
-})
+        // Add New Transaction
+        await addNewTransaction.createNewTransactionWithCash();
 
+        // Navigate to Dashboard
+        await page.goto('/dashboard');
+
+        // Validate Created Transaction
+        await addNewTransaction.validateCreatedTransaction();
+
+        // Download Template
+        await addNewTransaction.downloadTemplate();
+
+        // Import Transaction
+        await addNewTransaction.importTransaction();
+    });
+
+});

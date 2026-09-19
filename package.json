@@ -1,6 +1,7 @@
 {
   "name": "playwright-automation-cursor",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {},
   "keywords": [],
